@@ -66,32 +66,30 @@ essere utilizzate sono i "chroot", questa tecnologia è molto
 primitiva. Molto semplice da applicare:
 
 ```sh
- # export MY_CHROOT="/directory"
+ export MY_CHROOT="/directory"
 ```
 ```sh
- # mount proc $MY_CHROOT/proc -t proc
+ mount proc $MY_CHROOT/proc -t proc
 ```
 ```sh
- # echo "proc $MY_CHROOT/proc proc defaults 0 0" >> /etc/fstab 
-  
+  echo "proc $MY_CHROOT/proc proc defaults 0 0" >> /etc/fstab 
  # rende le modifiche permanenti
 ```
 ```sh
- # echo "sysfs $MY_CHROOT/sys sysfs defaults 0 0" >> /etc/fstab 
-  
+ echo "sysfs $MY_CHROOT/sys sysfs defaults 0 0" >> /etc/fstab 
  # rende le modifiche permanenti
 ```
 ```sh
- # mount sysfs $MY_CHROOT/sys -t sysfs
+  mount sysfs $MY_CHROOT/sys -t sysfs
 ```
 ```sh
- # cp /etc/hosts $MY_CHROOT/etc/hosts
+ cp /etc/hosts $MY_CHROOT/etc/hosts
 ```
 ```sh
- # cp /proc/mounts $MY_CHROOT/etc/mtab
+ cp /proc/mounts $MY_CHROOT/etc/mtab
 ```
 ```sh
- # chroot /directory/ /bin/bash
+ chroot /directory/ /bin/bash
 ```
 ora prima di eseguire un chroot possiamo costruire un semplice 
 sistema linux, questo può essere fatto in vari modi, possiamo 
@@ -105,7 +103,7 @@ Per poter avviare applicazioni grafiche possiamo semplicemente
 utilizzare un comando prima di entrare nel chroot, il comando è:
 
 ```sh
- # xhost local:localuser
+ xhost local:localuser
 ```
 Attenzione non possiamo usare systemctl ed in genere systemd per 
 manipolare i servizi all'interno del chroot, questo è un problema 
