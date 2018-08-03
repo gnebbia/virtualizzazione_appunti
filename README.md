@@ -1,16 +1,4 @@
-<!--
-.. title: Virtualizzazione Appunti
-.. slug: vt_technologies_appunti
-.. date: 2018-07-06 14:20:00 UTC+02:00
-.. tags:
-.. category:
-.. link:
-.. description:
-.. type: text
--->
-
-
-
+# Virtualization Technologies Appunti
 
 ## Introduzione 
 
@@ -1096,7 +1084,7 @@ possiamo eseguire:
  # rdinit=/bin/sh" -dtb vexpress-v2p-ca9.dtb -initrd 
  # initramfs.cpio.gz
 ```
-4 Docker
+## Docker
 
 Docker is a Container managing software. Containers or in general 
 Container based virtualization uses the kernel on the host's OS 
@@ -1139,7 +1127,7 @@ The advantages of using Containers vs VMs are:
 ```sh
  # greater protability
 ```
-## Docker Installation
+### Docker Installation
 
 
 Docker engine is the program that enables containers to be built, 
@@ -1382,7 +1370,7 @@ add/modify policies, probably a command like:
  # check command
 ```
 
-## Image Layers
+### Image Layers
 
 Images are comprised of multiple layers, a layer is also just 
 another image, but everyimage contains a base layer, layers are 
@@ -1443,7 +1431,7 @@ name, so with:
  docker run -it johnnyty/myapp:1.0
 ```
 
-## Dockerfile
+### Dockerfile
 
 A dockerfile is a configuration file that contains instructions 
 for buildinf a Docker image. Basically we have:
@@ -1524,7 +1512,7 @@ the docker image the commands do not override the ping command
 specified, instead they are taken as argument, this docker image 
 acts exactly like an executable.
 
-### Start and Stop Containers or exec other processes
+#### Start and Stop Containers or exec other processes
 
 
 We can list all containers with:
@@ -1567,7 +1555,7 @@ In order to create a container we can do:
  # runs it. 
 ```
 
-### Practical example: Tomcat
+#### Practical example: Tomcat
 
 We can do:
 
@@ -1702,7 +1690,7 @@ note that this psh will give us errors if on our account there
 isn't yet any repo called "johnnytu/testimage" so we first have 
 to create it if it doesn't exist.
 
-## Volumes
+### Volumes
 
 
 A volume is a designated directory in a container, which is 
@@ -1909,7 +1897,7 @@ container logs, for example with:
  # now we can see logs in our directory /nginxlogs
 ```
 
-## Inspecting a Container
+### Inspecting a Container
 
 
 We can inspect a container by executing the command:
@@ -1926,7 +1914,7 @@ we can use grep to filter for a specific detail, for example:
  # this will show the IP address of the specified container
 ```
 
-## Configurazione del demone docker
+### Configurazione del demone docker
 
 Il file di configurazione è localizzato in "/etc/default/docker", 
 possiamo usare DOCKER_OPTS per controllare le opzioni di startup 
@@ -1946,7 +1934,7 @@ comando:
  sudo docker -d --log-level=debug
 ```
 
-## Security
+### Docker Security
 
 Docker helps make applications safer as it provides a reduced set 
 of default privileges and capabilities, namespaces provide an 
@@ -1973,7 +1961,7 @@ resources. Quick security considerations are:
   * GRSEC
 
 
-## Private Registry (alternative to DockerHub)
+### Private Registry (alternative to DockerHub)
 
 We can run a new container using the registry image with:
 
@@ -2031,7 +2019,7 @@ DOCKER_OPTS="--insecure-registry 104.131.142.17:5000"
 and then we restart the docker daemon.
 
 
-## Docker Compose
+### Docker Compose
 
 Docker compose is a tool for creating and managing multi 
 container applications, containers are all defined in a single 
@@ -2049,9 +2037,9 @@ different containers and link them together, but the number of
 components grows, this is very impractical, so compose helps us 
 in this.
 
-## Useful Things
+### Docker Useful Things
 
-## Removing all the intermediate layers by exporting a container into a new image
+### Removing all the intermediate layers by exporting a container into a new image
 
 Let's say we have an image which have committed several times, 
 this image will contain all the history of the commissions which 
