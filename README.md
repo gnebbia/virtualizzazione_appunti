@@ -140,22 +140,22 @@ KVM, per installarlo con KVM eseguiamo:
  # KVM
 ```
 ```sh
- # yum install qemu-kvm
+ yum install qemu-kvm
 ```
 ```sh
- # yast -i kvm
+ yast -i kvm
 ```
 mentre nel caso in cui avessimo una CPU senza estensioni di 
 virtualizzazione allora installeremo
 
 ```sh
- # apt-get install qemu qemu-kvm libvirt-bin
+ apt-get install qemu qemu-kvm libvirt-bin
 ```
 ```sh
- # yum install qemu
+ yum install qemu
 ```
 ```sh
- # yast -i qemu
+ yast -i qemu
 ```
 N.B.: QEMU can make use of KVM when running a target architecture 
 that is the same as the host architecture. For instance, when 
@@ -183,45 +183,25 @@ mouse schiacciamo "Ctrl+Alt".
 Qemu supporta diversi tipi di immagine, ma la sua immagine nativa 
 e più flessibile è la "qcow2" che supporta:
 
-```sh
- # il "copy on write"
-```
-```sh
- # encryption
-```
-```sh
- # compressione
-```
-```sh
- # snapshot di macchine virtuali
-```
+ * il "copy on write"
+ * encryption
+ * compressione
+ * snapshot di macchine virtuali
+
 anche se Qemu supporta correntemente questi formati di immagine 
 disco:
 
-```sh
- # raw: questo è un formato binario semplice di un'immagine disco 
- # ed è molto portable
-```
-```sh
- # cloop: Compressed Loop format, usata principalmente per 
- # particolari immagini live come Knoppix e altri cd live
-```
-```sh
- # cow: immagine copy on write, supportata per ragioni storiche
-```
-```sh
- # qcow: immagina nativa di qemu, versione precedente, supportata 
- # per questioni di compatibilità
-```
-```sh
- # qcow2: immagine nativa di qemu
-```
-```sh
- # vmdk: immagine di VMware
-```
-```sh
- # vdi: immagine di Virtualbox
-```
+ * raw: questo è un formato binario semplice di un'immagine disco
+   ed è molto portable
+ * cloop: Compressed Loop format, usata principalmente per particolari 
+   immagini live come Knoppix e altri cd live
+ * cow: immagine copy on write, supportata per ragioni storiche
+ * qcow: immagina nativa di qemu, versione precedente, supportata 
+   per questioni di compatibilità
+ * qcow2: immagine nativa di qemu
+ * vmdk: immagine di VMware
+ * vdi: immagine di Virtualbox
+
 ### Creazione di un'immagine disco (ovvero come fare il set up 
 
   di un sistema guest)
@@ -248,8 +228,7 @@ di un OS con il comando "qemu", che su alcuni sistemi può essere "
 kvm":
 
 ```sh
- # qemu-system-x86_64 -enable-kvm -m 256 -hda miaImg.img -cdrom 
-  nomeIso.iso -boot d 
+ qemu-system-x86_64 -enable-kvm -m 256 -hda miaImg.img -cdrom nomeIso.iso -boot d 
  # in questo caso stiamo inizializzando un 
  # sistema con 256MB di RAM, e utilizzando la iso menzionata come 
  # immagine montata al boot, ricorda che se qemu non viene 
@@ -258,41 +237,35 @@ kvm":
  # attenzione se l'architettura emulata ha la stessa architettura
 ```
 ```sh
- # qemu-system-x86_64 -enable-kvm -m 256 -hda miaImg.img -cdrom 
-  /dev/cdrom -boot d 
+ qemu-system-x86_64 -enable-kvm -m 256 -hda miaImg.img -cdrom /dev/cdrom -boot d 
  # in questo caso viene preso proprio il 
  # contenuto del lettore cd/dvd del sistema host come boot per 
  # l'immagine, al posto di "/dev/cdrom" potremmo avere "/dev/sr0" 
  # o "/dev/dvd" a differenza della configurazione HW/SW del 
  # sistema host
 ```
-N.B.: Si può passare in modalità full-screen con la combinazione "
-Ctrl+Alt+f".
+N.B.: Si può passare in modalità full-screen con la combinazione "Ctrl+Alt+f".
 
 Vediamo altre opzioni di boot più complessa:
 
 ```sh
- # qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -hda miaImg.img 
- # -cdrom W7ALLINONE.iso -boot d -m 1024 -k it -netdev 
- # user,id=user.0 -device e1000,netdev=user.0 -usb -usbdevice 
-  tablet -vga qxl -display sdl -monitor stdio 
- # con smp 
- # specifichiamo il numero di processori, con -cpu host 
+ qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -hda miaImg.img \
+ -cdrom W7ALLINONE.iso -boot d -m 1024 -k it -netdev  \
+ user,id=user.0 -device e1000,netdev=user.0 -usb -usbdevice \
+ tablet -vga qxl -display sdl -monitor stdio 
+ # con smp specifichiamo il numero di processori, con -cpu host 
  # specifichiamo la cpu del sistema ospitante
 ```
 ```sh
- # qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -hda miaImg.img 
- # -cdrom debian-8.2.0-amd64-netinst.iso -boot d -m 1024 -usb -vga 
-  qxl 
+ qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -hda miaImg.img \
+ -cdrom debian-8.2.0-amd64-netinst.iso -boot d -m 1024 -usb -vga qxl 
  # per vga esistono diverse opzioni, se dovessimo avere 
  # problemi col video possiamo provare le altre, possiamo 
- # analizzarle attraverso "man qemu-system-x86_64" e poi cercando "
- # -vga"
+ # analizzarle attraverso "man qemu-system-x86_64" e poi cercando "-vga"
 ```
 ```sh
- # qemu-system-ppc -hda miaImg.img -cdrom 
- # debian-8.2.0-powerpc-netinst.iso -boot d -m 1024 -usb 
-  
+ qemu-system-ppc -hda miaImg.img -cdrom \
+ debian-8.2.0-powerpc-netinst.iso -boot d -m 1024 -usb 
  # emuliamo un powerpc in questo caso
 ```
 ### Quali CPU ho a disposizione ?
@@ -316,8 +289,7 @@ processori dell'architettura MIPS, eseguiamo:
  # visualizzato il modello interessato possiamo selezionarlo con:
 ```
 ```sh
- # qemu-system-mips -cpu 4Km -hda miaImg.img -cdrom 
- # debian_8.0_mips.iso -boot d -m 1024
+ qemu-system-mips -cpu 4Km -hda miaImg.img -cdrom debian_8.0_mips.iso -boot d -m 1024
 ```
 altre volte per alcune CPU tipo arm, dobbiamo specificare prima 
 il tipo di macchina attraverso il comando "-machine" quindi 
