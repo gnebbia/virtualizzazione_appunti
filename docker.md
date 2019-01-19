@@ -1,4 +1,4 @@
-## Docker
+# Docker
 
 Docker is a Container managing software. Containers or in general 
 Container based virtualization uses the kernel on the host's OS 
@@ -24,7 +24,7 @@ The advantages of using Containers vs VMs are:
 * greater protability
 
 
-### Docker Installation
+## Docker Installation
 
 
 Docker engine is the program that enables containers to be built, 
@@ -61,7 +61,7 @@ To look at the docker version we do:
  docker version
 ```
 
-### Images vs Containers
+## Images vs Containers
 
 Let's see the difference between images and containers.
 
@@ -75,7 +75,7 @@ Containers:
  * contains everything needed to run my app
  * based on one or more images
 
-we can browse images on dockerhub, and the one called "library/java" or 
+we can browse images on **dockerhub**, and the one called "library/java" or 
 "library/nginx", so in general starting with "library/" are the official ones.
 
 Now it is important to define the difference between an image and 
@@ -87,13 +87,14 @@ a live container.
    and we can have more containers which were originated from the 
    same image
 
-### Display local images
 
+## Display local images
 
 To display local images we can do:
 
 ```sh
- docker images #displays docker images
+ docker images 
+ # displays docker images
 ```
 
 notice that each docker image has "tags" associated to it, these 
@@ -107,21 +108,19 @@ Containers can be specified using their ID or name, there are:
 * long ID
 * short ID
 
-short ID and name of running containers can be obtained using
+short ID and name of running containers can be obtained using:
 
 ```sh
  docker ps
 ```
-
 while long ID are obtained by inspecting the container.
-
 To display all the available containers we can do:
 
 ```sh
  docker ps -a
 ```
 
-### Creating a Container
+## Creating a Container
 
 
 To create a container we do:
@@ -145,7 +144,7 @@ time we do a docker run, a new container is created, in order to
 have persistance among states, we should launch docker with start 
 and attack
 
-### Connecting to the Container
+## Connecting to the Container
 
 
 To instantiate an image and connect directly to the container 
@@ -153,6 +152,10 @@ with a shell we do:
 
 ```sh
  docker run -i -t ubuntu:latest /bin/bash 
+```
+
+```sh
+docker run -itd --name my-http-container-1 -p 5555:80 my-httpd:latest
 ```
 
 in this case the "-i" flag tells docker to connect to the STDIN 
@@ -182,7 +185,9 @@ or more simply:
  docker start -ia <id>
 ```
 
-### Docker Detached Mode
+We can launch in a more advanced manner with:
+
+## Docker Detached Mode
 
 
 Now we do:
@@ -203,7 +208,7 @@ docker logs -f 62ba075bee18
 
 in this case we see the stdout in real time.
 
-### Practical Example: A Web Application Container
+## Practical Example: A Web Application Container
 
 
 Now we want to run a web application inside a container, we'll 
@@ -229,7 +234,7 @@ now if we do something, like creating a new file or modifying an
 existing file, we can exit, and once we exit in order to get back 
 we should launch docker with start and attach
 
-### Practical Example: Giving Graphics (Xorg) and Sound to an 
+## Practical Example: Giving Graphics (Xorg) and Sound to an 
 
   application
 
@@ -290,7 +295,7 @@ add/modify policies, probably a command like:
  # check command
 ```
 
-### Image Layers
+## Image Layers
 
 Images are comprised of multiple layers, a layer is also just 
 another image, but everyimage contains a base layer, layers are 
@@ -351,7 +356,7 @@ name, so with:
  docker run -it johnnyty/myapp:1.0
 ```
 
-### Dockerfile
+## Dockerfile
 
 A dockerfile is a configuration file that contains instructions 
 for buildinf a Docker image. Basically we have:
@@ -432,7 +437,7 @@ the docker image the commands do not override the ping command
 specified, instead they are taken as argument, this docker image 
 acts exactly like an executable.
 
-#### Start and Stop Containers or exec other processes
+### Start and Stop Containers or exec other processes
 
 
 We can list all containers with:
@@ -475,14 +480,14 @@ In order to create a container we can do:
  # runs it. 
 ```
 
-#### Practical example: Tomcat
+### Practical example: Tomcat
 
 We can do:
 
 ```sh
  docker run -d tomcat:7 
- # this starts (and downloads if it 
- # doesn't exist) an image of tomcat version 7 in background
+ # this starts (and downloads if it # doesn't exist) 
+ # an image of tomcat version 7 in background
 ```
 
 then
@@ -538,7 +543,7 @@ execute:
  docker attach `docker ps -q -l`
 ```
 
-### Delete Containers
+## Delete Containers
 
 To remove a container we first have to stop it and then run:
 
@@ -560,7 +565,7 @@ we can verify the deletion of an image with:
  docker images
 ```
 
-### Tagging Images
+## Tagging Images
 
 We can tag images or rename a local image repo with:
 
@@ -585,7 +590,7 @@ or
  docker tag johnny/testimage:1.5 trainingteam/testexample
 ```
 
-### Copying data into a Container
+## Copying data into a Container
 
 
 In order to copy data in a container we can do:
@@ -596,7 +601,7 @@ In order to copy data in a container we can do:
 ```sh
  docker cp name_of_container:/dest/path  /path/to/myfile.txt
 ```
-### Pushing Image to Remote Repo
+## Pushing Image to Remote Repo
 
 
 We can push an image with:
@@ -610,7 +615,7 @@ note that this psh will give us errors if on our account there
 isn't yet any repo called "johnnytu/testimage" so we first have 
 to create it if it doesn't exist.
 
-### Volumes
+## Volumes
 
 
 A volume is a designated directory in a container, which is 
@@ -661,7 +666,7 @@ Mounting folders from the host is food for testing purposes but
 generally not recommended for production use, indeed it is not 
 possible to do the mappings inside the Dockerfiles.
 
-### Mapping of ports and services
+## Mapping of ports and services
 
 
 We don't always need mapping of ports, once we have runned our 
@@ -699,7 +704,7 @@ Dockerfile:
 EXPOSE 80 443 in this case we are enabling automatic mapping for 
 port 80 and 443 (HTTP and HTTPS).
 
-### Linking Containers
+## Linking Containers
 
 
 To create a link, we first have to create the source containeir 
@@ -739,7 +744,7 @@ with:
 ```
 as we can see the two IPs will match.
 
-### We can automate Build Repos!!
+## We can automate Build Repos!!
 
 
 On dockerhub there is the possibility to automate the building of 
@@ -817,7 +822,7 @@ container logs, for example with:
  # now we can see logs in our directory /nginxlogs
 ```
 
-### Inspecting a Container
+## Inspecting a Container
 
 
 We can inspect a container by executing the command:
@@ -834,7 +839,7 @@ we can use grep to filter for a specific detail, for example:
  # this will show the IP address of the specified container
 ```
 
-### Configurazione del demone docker
+## Configurazione del demone docker
 
 Il file di configurazione è localizzato in "/etc/default/docker", 
 possiamo usare DOCKER_OPTS per controllare le opzioni di startup 
@@ -854,7 +859,7 @@ comando:
  sudo docker -d --log-level=debug
 ```
 
-### Docker Security
+## Docker Security
 
 Docker helps make applications safer as it provides a reduced set 
 of default privileges and capabilities, namespaces provide an 
@@ -881,7 +886,7 @@ resources. Quick security considerations are:
   * GRSEC
 
 
-### Private Registry (alternative to DockerHub)
+## Private Registry (alternative to DockerHub)
 
 We can run a new container using the registry image with:
 
@@ -939,7 +944,7 @@ DOCKER_OPTS="--insecure-registry 104.131.142.17:5000"
 and then we restart the docker daemon.
 
 
-### Docker Compose
+## Docker Compose
 
 Docker compose is a tool for creating and managing multi 
 container applications, containers are all defined in a single 
@@ -957,9 +962,9 @@ different containers and link them together, but the number of
 components grows, this is very impractical, so compose helps us 
 in this.
 
-### Docker Useful Things
+## Docker Useful Things
 
-### Removing all the intermediate layers by exporting a container into a new image
+## Removing all the intermediate layers by exporting a container into a new image
 
 Let's say we have an image which have committed several times, 
 this image will contain all the history of the commissions which 
