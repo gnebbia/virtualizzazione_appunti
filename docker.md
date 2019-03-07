@@ -1086,3 +1086,11 @@ Once a container is running we can check its exposed ports with:
 ```sh
 docker port <nameofthecontainer>
 ```
+
+We can at any time delete containers with:
+```sh
+docker rm <idofcontainer>
+# or to remove all exited containers, we can do:
+docker rm $(docker ps -a -q -f status=exited)
+```
+
