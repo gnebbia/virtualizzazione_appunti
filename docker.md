@@ -120,6 +120,22 @@ To display all the available containers we can do:
  docker ps -a
 ```
 
+We can delete all currently running containers shown with `docker ps -a`
+by issuing:
+```sh
+docker rm $(docker ps -a -q -f status=exited)
+```
+
+or in more recent versions we can also do:
+```sh
+docker container prune
+```
+
+We can also launch a docker image and automatically remove it when it exits:
+```sh
+docker run --rm alpine
+```
+
 ## Creating a Container
 
 
@@ -215,7 +231,17 @@ Now we want to run a web application inside a container, we'll
 use the "-P" flag to map contiainer ports to host ports, so we 
 do:
 
-docker run -d -P tomcat:latest
+```sh
+docker run -d -P --name tomcat tomcat:latest
+# with -d we start it in detached mode
+# with -P will expose all public ports to random ports
+# with --name we assign a name to the container
+```
+
+We can check which are the assigned random ports by doing:
+```sh
+docker port static-site
+```
 
 now we can do:
 
@@ -964,7 +990,7 @@ in this.
 
 ## Docker Useful Things
 
-## Removing all the intermediate layers by exporting a container into a new image
+### Removing all the intermediate layers by exporting a container into a new image
 
 Let's say we have an image which have committed several times, 
 this image will contain all the history of the commissions which 
@@ -996,4 +1022,67 @@ set to "<none>", now we can rename the image with:
 
 ```sh
  docker tag imageID repoName:imageName
+```
+
+### Docker Fast Track
+
+
+Docker has the concept of images (which can be thought as blueprints/models/starting points
+of virtualization environments) and containers which are instances of these
+images.
+
+Once docker is installed we can check installed images with:
+```sh
+docker images
+# or
+docker image -ls 
+```
+
+we can check living containers with:
+```sh
+docker container ls
+# or
+docker ps
+# or 
+docker container ls -a # to also check for not currently running containers
+# or
+docker ps -a # to also check for not currently running containers
+```
+
+We can download a new image from docker hub by doing:
+```sh
+docker pull <nameoftheimage>
+```
+
+At this point we can run this image in various ways, for example:
+1. We can run it by attaching a live interactive shell
+
+```sh
+docker run -it -P --name <nameofthecontainer> <nameoftheimage>
+```
+2. We can run it in detached mode
+
+```sh
+docker run -d -P --name <nameofthecontainer> <nameoftheimage>
+```
+3. We can run it by just executing the commands it automatically executes and
+   exit:
+```sh
+docker run --name <nameofthecontainer> <nameoftheimage>
+```
+
+We can also delete the container once the execution is stopped by appending the
+`--rm` option to these commands.
+
+We can also be specific on the mapping of ports by launching containers like
+this:
+
+```sh
+docker run -it -p 8888:80 --name <nameofthecontainer> <nameoftheimage>
+```
+
+
+Once a container is running we can check its exposed ports with:
+```sh
+docker port <nameofthecontainer>
 ```
