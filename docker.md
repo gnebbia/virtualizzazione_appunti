@@ -17,15 +17,38 @@ different virtual machine.
 
 The advantages of using Containers vs VMs are:
 
-* containers are more lightweight
+* containers are more **lightweight**
 * no need to install guest OS
 * less cpu, ram, storage space required
 * more containers per machine than VMs
-* greater protability
+* greater **portability**
+
+
+## Images vs Containers
+
+Let's see the difference between images and containers.
+
+Images:
+ * read only template used to create containers
+ * built by me or other docker users
+ * stored in the docker hub or my local registry
+
+Containers:
+ * isolated application platform
+ * contains everything needed to run my app
+ * based on one or more images
+
+
+It is important to highlight the differences between an image and 
+a live container, more precisely:
+ * An image: is a snapshot which does not change unless we do a 
+   commit, in order to instantiate an image we can do a "docker run"
+ * A container is a living image, what we do here is persistent, 
+   and we can have more containers which were originated from the 
+   same image
 
 
 ## Docker Installation
-
 
 Docker engine is the program that enables containers to be built, 
 shipped and run, docker engine uses Linux kernel namespaces and 
@@ -61,40 +84,19 @@ To look at the docker version we do:
  docker version
 ```
 
-## Images vs Containers
 
-Let's see the difference between images and containers.
+## Working with Images
 
-Images:
- * read only template used to create containers
- * built by me or other docker users
- * stored in the docker hub or my local registry
-
-Containers:
- * isolated application platform
- * contains everything needed to run my app
- * based on one or more images
-
-we can browse images on **dockerhub**, and the one called "library/java" or 
-"library/nginx", so in general starting with "library/" are the official ones.
-
-Now it is important to define the difference between an image and 
-a live container.
-
- * An image: is a snapshot which does not change unless we do a 
-   commit, in order to instantiate an image we can do a "docker run"
- * A container is a living image, what we do here is persistent, 
-   and we can have more containers which were originated from the 
-   same image
-
-
-## Display local images
-
-To display local images we can do:
-
+Generally for most commands related to images we can follow the syntax:
 ```sh
+ docker image <command> <args>
+```
+
+For example to display available local images we can do:
+```sh
+ docker image ls
+ # displays docker images or
  docker images 
- # displays docker images
 ```
 
 notice that each docker image has "tags" associated to it, these 
@@ -136,192 +138,18 @@ We can also launch a docker image and automatically remove it when it exits:
 docker run --rm alpine
 ```
 
-## Creating a Container
-
-
-To create a container we do:
-
+We can remove images with:
 ```sh
- sudo docker run [options] [image] [command] [args]
-```
-so docker will create the image if it doesn't exist and execute 
-the eventual command (if specified), so for example we could do:
-
-```sh
- docker run ubuntu:14.04 echo "Hello World"
-```
-or
-
-```sh
- docker run ubuntu:14.04 ps -aux
-```
-notice that docker run = docker create + docker start, hence any 
-time we do a docker run, a new container is created, in order to 
-have persistance among states, we should launch docker with start 
-and attack
-
-## Connecting to the Container
-
-
-To instantiate an image and connect directly to the container 
-with a shell we do:
-
-```sh
- docker run -i -t ubuntu:latest /bin/bash 
+docker image rm <id>
 ```
 
+We can also remove dangling images (i.e., images which are not tagged and not
+used by any container) with:
 ```sh
-docker run -itd --name my-http-container-1 -p 5555:80 my-httpd:latest
+docker image prune
 ```
 
-in this case the "-i" flag tells docker to connect to the STDIN 
-on the container, and the flag "-t" flag specifies to get a 
-pseudo-terminal. We MUST remember that the docker container is 
-alive only when the process is alive and changes are not written 
-by default, so we can do whatever we want and changes will not be 
-done to our image. Anyway changes will continue to live in the 
-container. We can view it with:
-
-```sh
- docker ps -a
-```
-
-and we can connect back to it with:
-```sh
- docker start <id>
-```
-
-```sh
- docker attach <id>
-```
-
-or more simply:
-
-```sh
- docker start -ia <id>
-```
-
-We can launch in a more advanced manner with:
-
-## Docker Detached Mode
-
-
-Now we do:
-
-docker run -d centos:7 ping 127.0.0.1 -c 100 in this case the 
-docker process detaches itself from the current shell, so the 
-operation specified is acting in the background, and only an ID 
-is given to us, we can view it with "docker ps", viewing even the 
-short ID, now with the short ID we can see what's printing on the 
-standard output our process, with:
-
-docker logs 62ba075bee18 in this case we see the ping output, 
-since it was the command we gave. 
-
-We can even attach ourself to the log file with:
-
-docker logs -f 62ba075bee18
-
-in this case we see the stdout in real time.
-
-## Practical Example: A Web Application Container
-
-
-Now we want to run a web application inside a container, we'll 
-use the "-P" flag to map contiainer ports to host ports, so we 
-do:
-
-```sh
-docker run -d -P --name tomcat tomcat:latest
-# with -d we start it in detached mode
-# with -P will expose all public ports to random ports
-# with --name we assign a name to the container
-```
-
-We can check which are the assigned random ports by doing:
-```sh
-docker port static-site
-```
-
-now we can do:
-
-docker ps here we see the short ID of our applications and the 
-portsgiven to our system, indeed we'll see a string under "PORTS" 
-with for example: "0.0.0.0:49153->8080/tcp" this means that the 
-port 8080 of the container has been mapped to the port 49153 on 
-the host system.
-
-To kill an existing docker process, once we have seen its ID, we 
-can do:
-
-docker kill 62ba075bee18
-
-now if we do something, like creating a new file or modifying an 
-existing file, we can exit, and once we exit in order to get back 
-we should launch docker with start and attach
-
-## Practical Example: Giving Graphics (Xorg) and Sound to an 
-
-  application
-
-Before giving sound and video to a container, we have to enable 
-the host machine to accept connections to the Xorg display from 
-the containers, we can do this by typing (before starting the 
-docker container):
-
-```sh
- xhost local:localuser 
-```
-```sh
- xhost + 
- # it is an alternative to the previous command, 
- # allowing everyone to connect to the Xorg server
-```
-
-it's useful to put this in an initialization configuration file, 
-such as "/etc/profile" or things of this kind. 
-
-Once we have done this, the following command let us run 
-graphical and/or audio application from inside the container:
-
-```sh
-docker run \
--v /tmp/.X11-unix:/tmp/.X11-unix \ # mount the X11 socket 
--e DISPLAY=unix$DISPLAY \ # pass the display called unix0
---device /dev/snd \ # sound
-```
-
-let's see an analogous example in which I ran a kali linux distro 
-docker image:
-
-```sh
-docker run -it --device /dev/snd -v /tmp/.X11-unix:/tmp/.X11-unix 
--e DISPLAY=unix$DISPLAY kalilinux/kali-linux-docker /bin/bash
-```
-
-so we just have to remember that each time we have to run a 
-graphical application we must provide:
-
- * necessary directories (-v)
- * necessary devices (--device)
- * necessary environment variables (-e)
-
-notice that on SELinux (e.g., Fedora and friends), systems there 
-are additional policies that have to be respected, in order to 
-bypass them temporarily we just have to run:
-
-```sh
- su -c "setenforce 0"
-```
-this is unsafe, to ensure safeness, look at SELinux, and how to 
-add/modify policies, probably a command like:
-
-```sh
- chcon -Rt svirt_sandbox_file_t /path/to/volume 
- # check command
-```
-
-## Image Layers
+### Image Layers
 
 Images are comprised of multiple layers, a layer is also just 
 another image, but everyimage contains a base layer, layers are 
@@ -382,86 +210,112 @@ name, so with:
  docker run -it johnnyty/myapp:1.0
 ```
 
-## Dockerfile
+### Tagging Images
 
-A dockerfile is a configuration file that contains instructions 
-for buildinf a Docker image. Basically we have:
-
- * FROM instructions: who specify the base image to use, such as:
-  -- FROM ubuntu:14.04
-
- * RUN instructions: who specify commands to execute, such as:
-  -- RUN apt-get install vim
-  -- RUN apt-get install curl
-
-so an example dockerfile can be built as the following:
-
-```docker
-#Example of a comment
-
-FROM ubuntu:14.04
-RUN apt-get install vim
-RUN apt-get install curl
-```
-
-the fact is that if we have 10 RUN instructions we do 10 commits, 
-to avoid this we can use the "&&" shell operator to aggregate RUN 
-instructions together, so we can build dockerfile with:
-
-```docker
-FROM ubuntu:14.04
-
-RUN apt-get update && apt-get install -y \
-	curl \
-	vim \
-	openjdk-7-jdk
-```
-
-now to build an image following this dockerfile we do:
+We can tag images or rename a local image repo with:
 
 ```sh
- docker build -t myrepo/myapp:1.0 path/to/folder/containing/theDockerfile
+ docker tag imageID repo:tag
 ```
-
-let's see another example:
+or:
 
 ```sh
- docker build -t myrepo2/mywebapp:latest . 
- # the build context 
- # here is the current directory
+ docker tag localRepo:tag anotherRepo:tag
 ```
 
-Notice that the dockerfile should be named "Dockerfile", we can 
-even choose another name, but in this case we should mention the 
-filename with the flag "-f"
+for example:
 
-In the Dockerfiles we can even specify commands that should be 
-executed once the container is executed, this is done through the 
-"CMD" directive, let's see an example:
-
-```docker
-FROM ubuntu:14.04
-
-RUN apt-get update && apt-get install -y \
-	curl \
-	vim
-CMD ping -c 10 127.0.0.1
+```sh
+ docker tag edfc1234je32 trainingteam/testexample:1.0
 ```
 
-these commands anyway can be overridden by specifying a command 
-in docker run, as we did in the first examples.
+or
 
-We can even specify the "ENTRYPOINT" directive which executes the 
-image as an executable for example:
-
-```docker
-ENTRYPOINT ["ping"]
+```sh
+ docker tag johnny/testimage:1.5 trainingteam/testexample
 ```
 
-once we have put this at the end of our Dockerfile, when we run 
-the docker image the commands do not override the ping command 
-specified, instead they are taken as argument, this docker image 
-acts exactly like an executable.
+
+### Pushing Image to Remote Repo
+
+We can push an image with:
+
+```sh
+ docker push johnnytu/testimage:1.0 
+ # this will begin the push once we specify the credentials
+```
+
+note that this psh will give us errors if on our account there 
+isn't yet any repo called "johnnytu/testimage" so we first have 
+to create it if it doesn't exist.
+
+
+## Working with Containers
+
+
+To create a container we do:
+
+```sh
+ sudo docker run [options] [image] [command] [args]
+```
+
+so docker will create (i.e., pull) the image if it doesn't exist and execute 
+the eventual command (if specified), so for example we could do:
+
+```sh
+ docker run ubuntu:14.04 echo "Hello World"
+```
+or
+
+```sh
+ docker run ubuntu:14.04 ps -aux
+```
+notice that docker run = docker create + docker start, hence any 
+time we do a docker run, a new container is created, in order to 
+have persistance among states, we should launch docker with start 
+and attack
+
+
+### Connecting to a Container Interactively
+
+
+To instantiate an image and connect directly to the container 
+with a shell we do:
+
+```sh
+ docker run -i -t ubuntu:latest /bin/bash 
+```
+
+```sh
+docker run -itd --name my-http-container-1 -p 5555:80 my-httpd:latest
+```
+
+in this case the "-i" flag tells docker to connect to the STDIN 
+on the container, and the flag "-t" flag specifies to get a 
+pseudo-terminal. We MUST remember that the docker container is 
+alive only when the process is alive and changes are not written 
+by default, so we can do whatever we want and changes will not be 
+done to our image. Anyway changes will continue to live in the 
+container. We can view it with:
+
+```sh
+ docker ps -a
+```
+
+and we can connect back to it with:
+```sh
+ docker start <id>
+```
+
+```sh
+ docker attach <id>
+```
+
+or more simply:
+
+```sh
+ docker start -ia <id>
+```
 
 ### Start and Stop Containers or exec other processes
 
@@ -569,7 +423,7 @@ execute:
  docker attach `docker ps -q -l`
 ```
 
-## Delete Containers
+### Delete Containers
 
 To remove a container we first have to stop it and then run:
 
@@ -591,33 +445,208 @@ we can verify the deletion of an image with:
  docker images
 ```
 
-## Tagging Images
+### Docker Detached Mode
 
-We can tag images or rename a local image repo with:
+Now we do:
 
-```sh
- docker tag imageID repo:tag
-```
-or:
+docker run -d centos:7 ping 127.0.0.1 -c 100 in this case the 
+docker process detaches itself from the current shell, so the 
+operation specified is acting in the background, and only an ID 
+is given to us, we can view it with "docker ps", viewing even the 
+short ID, now with the short ID we can see what's printing on the 
+standard output our process, with:
 
-```sh
- docker tag localRepo:tag anotherRepo:tag
-```
+docker logs 62ba075bee18 in this case we see the ping output, 
+since it was the command we gave. 
 
-for example:
-
-```sh
- docker tag edfc1234je32 trainingteam/testexample:1.0
-```
-
-or
+We can even attach ourself to the log file with:
 
 ```sh
- docker tag johnny/testimage:1.5 trainingteam/testexample
+ docker logs -f 62ba075bee18
 ```
 
-## Copying data into a Container
+in this case we see the stdout in real time.
 
+
+### Practical Example: A Web Application Container
+
+Now we want to run a web application inside a container, we'll 
+use the "-P" flag to map contiainer ports to host ports, so we 
+do:
+
+```sh
+docker run -d -P --name tomcat tomcat:latest
+# with -d we start it in detached mode
+# with -P will expose all public ports to random ports
+# with --name we assign a name to the container
+```
+
+We can check which are the assigned random ports by doing:
+```sh
+docker port static-site
+```
+
+now we can do:
+
+docker ps here we see the short ID of our applications and the 
+portsgiven to our system, indeed we'll see a string under "PORTS" 
+with for example: "0.0.0.0:49153->8080/tcp" this means that the 
+port 8080 of the container has been mapped to the port 49153 on 
+the host system.
+
+To kill an existing docker process, once we have seen its ID, we 
+can do:
+
+```sh
+docker kill 62ba075bee18
+```
+
+now if we do something, like creating a new file or modifying an 
+existing file, we can exit, and once we exit in order to get back 
+we should launch docker with start and attach
+
+### Practical Example: Giving Graphics (Xorg) and Sound to an application
+
+Before giving sound and video to a container, we have to enable 
+the host machine to accept connections to the Xorg display from 
+the containers, we can do this by typing (before starting the 
+docker container):
+
+```sh
+ xhost local:localuser 
+```
+```sh
+ xhost + 
+ # it is an alternative to the previous command, 
+ # allowing everyone to connect to the Xorg server
+```
+
+it's useful to put this in an initialization configuration file, 
+such as "/etc/profile" or things of this kind. 
+
+Once we have done this, the following command let us run 
+graphical and/or audio application from inside the container:
+
+```sh
+ docker run \
+ -v /tmp/.X11-unix:/tmp/.X11-unix \ # mount the X11 socket 
+ -e DISPLAY=unix$DISPLAY \ # pass the display called unix0
+ --device /dev/snd \ # sound
+```
+
+let's see an analogous example in which I ran a kali linux distro 
+docker image:
+
+```sh
+ docker run -it --device /dev/snd -v /tmp/.X11-unix:/tmp/.X11-unix 
+ -e DISPLAY=unix$DISPLAY kalilinux/kali-linux-docker /bin/bash
+```
+
+so we just have to remember that each time we have to run a 
+graphical application we must provide:
+* necessary directories (-v)
+* necessary devices (--device)
+* necessary environment variables (-e)
+
+notice that on SELinux (e.g., Fedora and friends) systems there 
+are additional policies that have to be respected, in order to 
+bypass them temporarily we just have to run:
+
+```sh
+ su -c "setenforce 0"
+```
+this is unsafe, to ensure safeness, look at SELinux, and how to 
+add/modify policies, probably a command like:
+
+```sh
+ chcon -Rt svirt_sandbox_file_t /path/to/volume 
+ # check command
+```
+
+
+## Dockerfiles
+
+A dockerfile is a configuration file that contains instructions 
+for buildinf a Docker image. Basically we have:
+
+ * FROM instructions: who specify the base image to use, such as:
+  -- FROM ubuntu:14.04
+
+ * RUN instructions: who specify commands to execute, such as:
+  -- RUN apt-get install vim
+  -- RUN apt-get install curl
+
+so an example dockerfile can be built as the following:
+
+```docker
+#Example of a comment
+
+FROM ubuntu:14.04
+RUN apt-get install vim
+RUN apt-get install curl
+```
+
+the fact is that if we have 10 RUN instructions we do 10 commits, 
+to avoid this we can use the "&&" shell operator to aggregate RUN 
+instructions together, so we can build dockerfile with:
+
+```docker
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get install -y \
+	curl \
+	vim \
+	openjdk-7-jdk
+```
+
+now to build an image following this dockerfile we do:
+
+```sh
+ docker build -t myrepo/myapp:1.0 path/to/folder/containing/theDockerfile
+```
+
+let's see another example:
+
+```sh
+ docker build -t myrepo2/mywebapp:latest . 
+ # the build context 
+ # here is the current directory
+```
+
+Notice that the dockerfile should be named "Dockerfile", we can 
+even choose another name, but in this case we should mention the 
+filename with the flag "-f"
+
+In the Dockerfiles we can even specify commands that should be 
+executed once the container is executed, this is done through the 
+"CMD" directive, let's see an example:
+
+```docker
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get install -y \
+	curl \
+	vim
+CMD ping -c 10 127.0.0.1
+```
+
+these commands anyway can be overridden by specifying a command 
+in docker run, as we did in the first examples.
+
+We can even specify the "ENTRYPOINT" directive which executes the 
+image as an executable for example:
+
+```docker
+ENTRYPOINT ["ping"]
+```
+
+once we have put this at the end of our Dockerfile, when we run 
+the docker image the commands do not override the ping command 
+specified, instead they are taken as argument, this docker image 
+acts exactly like an executable.
+
+
+## Sharing data in Docker
 
 In order to copy data in a container we can do:
 
@@ -627,22 +656,9 @@ In order to copy data in a container we can do:
 ```sh
  docker cp name_of_container:/dest/path  /path/to/myfile.txt
 ```
-## Pushing Image to Remote Repo
 
-
-We can push an image with:
-
-```sh
- docker push johnnytu/testimage:1.0 
- # this will begin the push once we specify the credentials
-```
-
-note that this psh will give us errors if on our account there 
-isn't yet any repo called "johnnytu/testimage" so we first have 
-to create it if it doesn't exist.
 
 ## Volumes
-
 
 A volume is a designated directory in a container, which is 
 designed to persist data, independent of the container's life 
@@ -692,8 +708,8 @@ Mounting folders from the host is food for testing purposes but
 generally not recommended for production use, indeed it is not 
 possible to do the mappings inside the Dockerfiles.
 
-## Mapping of ports and services
 
+## Mapping of ports and services
 
 We don't always need mapping of ports, once we have runned our 
 system it will have its IP address, let's say we have a shell, we 
@@ -730,8 +746,8 @@ Dockerfile:
 EXPOSE 80 443 in this case we are enabling automatic mapping for 
 port 80 and 443 (HTTP and HTTPS).
 
-## Linking Containers
 
+## Linking Containers
 
 To create a link, we first have to create the source containeir 
 and the create the recipient container and then use the "--link", 
@@ -770,8 +786,8 @@ with:
 ```
 as we can see the two IPs will match.
 
-## We can automate Build Repos!!
 
+### We can automate Build Repos
 
 On dockerhub there is the possibility to automate the building of 
 the repo, let's assume we have a java source called 
@@ -865,10 +881,10 @@ we can use grep to filter for a specific detail, for example:
  # this will show the IP address of the specified container
 ```
 
-## Configurazione del demone docker
+### Configurazione del demone docker
 
 Il file di configurazione è localizzato in "/etc/default/docker", 
-possiamo usare DOCKER_OPTS per controllare le opzioni di startup 
+possiamo usare `DOCKER_OPTS` per controllare le opzioni di startup 
 del demone quando runna come servizio, dobbiamo riavviare il 
 servizio per fare in modo che le modifiche abbiano effetto con:
 
@@ -988,7 +1004,7 @@ different containers and link them together, but the number of
 components grows, this is very impractical, so compose helps us 
 in this.
 
-## Docker Useful Things
+## Docker: Other Useful Things
 
 ### Removing all the intermediate layers by exporting a container into a new image
 
@@ -1024,8 +1040,8 @@ set to "<none>", now we can rename the image with:
  docker tag imageID repoName:imageName
 ```
 
-### Docker Fast Track
 
+### Docker Fast Track
 
 Docker has the concept of images (which can be thought as blueprints/models/starting points
 of virtualization environments) and containers which are instances of these
@@ -1094,3 +1110,7 @@ docker rm <idofcontainer>
 docker rm $(docker ps -a -q -f status=exited)
 ```
 
+We can at any time delete images with:
+```sh
+docker image rm <idofimage>
+```
