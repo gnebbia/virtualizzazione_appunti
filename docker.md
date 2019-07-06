@@ -45,6 +45,7 @@ On the contrary the image is static and will still contain the blueprint of our
 minimal gnu/linux image. 
 We can instantiate more containers related to a single image.
 
+
 ## Docker Installation
 
 Docker engine is the program that enables containers to be built, shipped
@@ -108,7 +109,6 @@ Let's summarize the fundamental differences between images and containers:
 
 
 
-
 ## Working with Images
 
 Generally for most commands related to images we can follow the syntax:
@@ -120,9 +120,9 @@ For example to display available local images we can do:
 ```sh
  docker image ls # displays docker images
 ```
-or
+or shortly:
 ```sh
-docker images
+ docker images
 ```
 
 Notice that images are specified by "image:tag", so each docker image has 
@@ -139,17 +139,19 @@ short ID and name of images can be obtained using:
  docker images
 ```
 
-We can view IDs of running containers with:
+
+We can delete an image by doing:
 ```sh
- docker ps
+ docker image rm <image_id>
 ```
 
-while long ID are obtained by inspecting the image.  To display
-all the available containers we can do:
-
+or in its shortest form by doing:
 ```sh
- docker ps -a
+ docker rmi <image_id>
+ # the image ID can be get from the `docker images`
+ # command
 ```
+
 
 We can delete all currently running containers shown with `docker ps -a`
 by issuing:
@@ -159,24 +161,32 @@ docker rm $(docker ps -a -q -f status=exited)
 
 or in more recent versions we can also do:
 ```sh
-docker container prune
+ docker container prune
 ```
 
 We can also launch a docker image and automatically remove it when it
 exits:
 ```sh
-docker run --rm alpine
+ docker run --rm alpine
 ```
 
-We can remove images with: 
-```sh
-docker image rm <id>
-```
 
 We can also remove dangling images (i.e., images which are not tagged
 and not used by any container) with: 
 ```sh
-docker image prune
+ docker image prune
+```
+
+We can view IDs of running image instances (containers) with:
+```sh
+ docker ps
+```
+
+while long ID are obtained by inspecting the image.  To display
+all the available containers we can do:
+
+```sh
+ docker ps -a
 ```
 
 ### Image Layers
@@ -264,7 +274,7 @@ or
 ```
 
 
-### Pushing Image to Remote Repo
+### Pushing Images to Remote Repositories
 
 We can push an image with:
 
@@ -280,8 +290,7 @@ if it doesn't exist.
 
 ## Working with Containers
 
-
-To create a container we do:
+To create a container starting from an image we do:
 
 ```sh
  docker run [options] [image] [command] [args]
@@ -293,25 +302,39 @@ execute the eventual command (if specified), so for example we could do:
 ```sh
  docker run ubuntu:14.04 echo "Hello World"
 ```
-
 or
 
 ```sh
  docker run ubuntu:14.04 ps -aux
 ```
 
-notice that `docker run` = `docker create` + `docker start`, hence any
-time we do a docker run, a new container is created.
+notice that `docker run` = `docker create` + `docker start` + `docker exec`,
+hence any time we do a docker run, a new container is created.
+
+Let's see other common options to start a contaneir, we may want for example to
+run a container and assign it a name:
+```sh
+ docker run -it --name "mycustom_name" ubuntu:14.04 /bin/bash
+```
+It is generally a good practice to assign a name to containers.
+
+We can provide the container with more network capabilities, by adding them,
+such as:
+```sh
+docker run --cap-add=NET_ADMIN -it  --name "host1" ubuntu:16.04
+```
+This can be useful for example to experiment with iptables and docker.
+
 
 We can check existing containers by doing:
 ```sh
 docker container ls -a
 ```
-
 or 
 ```sh
 docker ps -a
 ```
+
 If we want to show just currently running containers we can do:
 ```sh
 docker ps
@@ -324,7 +347,7 @@ To instantiate an image and connect directly to the container with a
 shell we do:
 
 ```sh
- docker run -i -t ubuntu:latest /bin/bash
+ docker run -it ubuntu:latest /bin/bash
 ```
 
 ```sh
@@ -341,6 +364,7 @@ We can view our container with:
 ```sh
  docker ps -a
 ```
+Once we exit from our container
 
 and we can connect back to it with: 
 ```sh
@@ -348,16 +372,17 @@ and we can connect back to it with:
  docker attach <id>
 ```
 
-or more simply:
+or more simply by doing:
 ```sh
  docker start -ia <id>
 ```
 
-We can execute a single command innside a container (once it is started) by
+We can execute a single command inside a container (once it is started) by
 doing:
 ```sh
-docker exec -it 7c94d226fc2a command arg1 arg2 
+docker exec -it <container_id> command arg1 arg2 
 ```
+
 This is useful anytime we want to execute a command inside a container and save
 the output inside a file on our local disk.
 
@@ -1077,31 +1102,42 @@ docker image -ls
 ```
 
 we can check existing containers with:
-```sh docker container ls -a
+```sh
+docker container ls -a
 # or
 docker ps -a
-# or docker container ls -a # to also check for not currently
-running containers # or docker ps -a # to also check for not currently
-running containers ```
+# or 
+docker container ls -a
+# to also check for not currently running containers
+docker ps -a 
+# to also check for not currently running containers
+```
 
-We can download a new image from docker hub by doing: ```sh docker pull
-<nameoftheimage> ```
+We can download a new image from docker hub by doing:
+```sh
+docker pull <nameoftheimage>
+```
 
-At this point we can run this image in various ways, for example: 1. We
-can run it by attaching a live interactive shell
+We can search for images by doing:
+```sh
+docker search <stringtosearch>
+```
 
+At this point we can instantiate the image in a container in 
+various ways:
+1. We can run it by attaching a live interactive shell
 ```sh 
-docker run -it -P --name <nameofthecontainer> <nameoftheimage>
+docker run -it -P --name <nameofthecontainer> <nameoftheimage> /bin/bash
 ``` 
 2. We can run it in detached mode
-
 ```sh
-docker run -d -P --name <nameofthecontainer> <nameoftheimage>
+docker run -itd -P --name <nameofthecontainer> <nameoftheimage>
 ```
 3. We can run it by just executing the commands it automatically
-executes and
-   exit:
-```sh docker run --name <nameofthecontainer> <nameoftheimage> ```
+   executes and exit:
+```sh 
+docker run --name <nameofthecontainer> <nameoftheimage> <command>
+```
 
 We can also delete the container once the execution is stopped by
 appending the `--rm` option to these commands.
@@ -1109,12 +1145,14 @@ appending the `--rm` option to these commands.
 We can also be specific on the mapping of ports by launching containers
 like this:
 
-```sh docker run -it -p 8888:80 --name <nameofthecontainer>
-<nameoftheimage> ```
+```sh
+docker run -it -p 8888:80 --name <nameofthecontainer> <nameoftheimage>
+```
 
-
-Once a container is running we can check its exposed ports with: ```sh
-docker port <nameofthecontainer> ```
+Once a container is running we can check its exposed ports with: 
+```sh
+docker port <nameofthecontainer>
+```
 
 We can at any time delete containers with: 
 ```sh
@@ -1128,5 +1166,23 @@ docker rm $(docker ps -a -q -f status=exited)
 
 We can at any time delete images with: 
 ```sh
-docker image rm <idofimage>
+docker rmi <image_id>
 ```
+
+
+We can attach to a running container by doing:
+```sh
+docker attach <id>
+```
+
+if the container is stopped we can start it and attach to it by doing:
+```sh
+docker start -ia <id>
+```
+
+remember that we can stop a running container (while inside of it) by pressing
+`ctrl+d`, or we can just detach from the current terminal (by leaving it in
+execution) by pressing `ctrl+p ctrl+q`.
+
+
+
