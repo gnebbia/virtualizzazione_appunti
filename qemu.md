@@ -88,9 +88,7 @@ disco:
  * vmdk: immagine di VMware
  * vdi: immagine di Virtualbox
 
-### Creazione di un'immagine disco (ovvero come fare il set up 
-
-  di un sistema guest)
+### Creazione di un'immagine disco (ovvero come fare il set up di un sistema guest)
 
 Per creare il nostro OS ospite (guest) dobbiamo prima creare 
 un'immagine disco vuota. Qemu utilizza il comando "qemu-img" per 

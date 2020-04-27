@@ -103,3 +103,20 @@ ssh -L 127.0.0.1:40000:127.0.0.1:2501 user@remoteprovider.example.com -p <sshpor
 # possiamo anche aggiungere un -N per evitare di ottenere una shell e un -f per 
 # mandare tutto in background
 ```
+
+
+## Creazione Server DHCP
+
+Puo' essere utile creare server DHCP che possono essere utilizzati
+all'interno di reti interne, cioe' configurazioni "internal network".
+
+Per creare un server per una rete interna chiamata "intnet" possiamo eseguire:
+```sh
+vboxmanage dhcpserver add --netname intnet --ip 10.10.10.1 --netmask 255.255.255.0 --lowerip 10.10.10.10 --upperip 10.10.10.20 --enable
+# Gli IP assegnabili sono nel range 10.10 al 10.20
+```
+
+Per visualizzare la lista di server DHCP disponibili possiamo eseguire:
+```sh
+vboxmanage list dhcpservers
+```
