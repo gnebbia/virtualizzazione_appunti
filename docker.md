@@ -817,23 +817,23 @@ example: (BEST PRACTICE: give the containers meaningful names)
 We first create the source container using the postgres:
 
 ```sh
- docker run -d --name database postgres
+docker run -d --name database postgres
 ```
 then we create the recipient container and link it:
 
 ```sh
- docker run -d -P --name website --link database:db nginx:1.7
+docker run -d -P --name website --link database:db nginx:1.7
  # here, after --link we put the name of the source folowed by its alias
 ```
 
 let's see another example:
 
 ```sh
- docker run -d --name dbms postgres:latest
+docker run -d --name dbms postgres:latest
 ``` 
 
 ```sh
- docker run -it --name website --link dbms:db ubuntu:14.04 bash
+docker run -it --name website --link dbms:db ubuntu:14.04 bash
 ```
 now inside our ubuntu container if we cat /etc/hosts, we can see
 clearly an entry for our alias name called "db" with its own IP address.
@@ -841,7 +841,7 @@ clearly an entry for our alias name called "db" with its own IP address.
 We could check this ip address even from outside the container with:
 
 ```sh
- docker inspect dbms | grep IPAddress
+docker inspect dbms | grep IPAddress
 ```
 as we can see the two IPs will match.
 
